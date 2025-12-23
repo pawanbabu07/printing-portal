@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hostel Record</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+        }
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .card {
+            background: #fff;
+            width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        p { margin: 6px 0; }
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            background: #f9fafb;
+            padding: 6px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        .view-btn { background: #4f46e5; }
+        .confirm-btn { background: #16a34a; }
+        .confirmed {
+            color: green;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Printing Review</h2>
+
+<% data.forEach(item => { %>
+<div class="card">
+
+    <!-- ❌ Reference NOT shown before confirm -->
+    <% if (item.isConfirmed) { %>
+        <p><b>Reference No:</b> <%= item._id %></p>
+    <% } %>
+
+    <p><b>Name:</b> <%= item.name %></p>
+    <p><b>Phone:</b> <%= item.phone %></p>
+    <p><b>Hostel No:</b> <%= item.hostelNo %></p>
+    <p><b>Room No:</b> <%= item.roomNo %></p>
+
+    <b>Documents:</b>
+    <% item.documents.forEach((doc, index) => { %>
+        <div class="doc-item">
+            <span><%= index + 1 %>. <%= doc.originalname %></span>
+            <a href="/uploads/<%= doc.filename %>" target="_blank" class="btn view-btn">
+                View
+            </a>
+        </div>
+    <% }) %>
+
+    <br>
+
+    <!-- ✅ CONFIRM LOGIC -->
+    <% if (!item.isConfirmed) { %>
+        <form
+            action="/confirm-record/<%= item._id %>"
+            method="POST"
+            onsubmit="return confirm('Are you sure you want to confirm?')">
+
+            <button type="submit" class="btn confirm-btn">
+                Confirm & Generate Reference
+            </button>
+        </form>
+    <% } else { %>
+        <p class="confirmed">✔ Record Confirmed</p>
+    <% } %>
+
+</div>
+<% }) %>
+
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Printing Portal</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            margin: 0;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        .navbar {
+            background: #1e293b;
+            padding: 14px 0;
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 24px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #60a5fa;
+        }
+
+        /* ---------- MAIN LAYOUT ---------- */
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        /* ---------- FORM ---------- */
+        .container {
+            flex: 1;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #1f2937;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+        }
+
+        /* ---------- FILE ROW ---------- */
+        .file-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        button {
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .view-btn {
+            background: #2563eb;
+            color: #fff;
+            padding: 8px 12px;
+        }
+
+        .add-btn {
+            width: 100%;
+            background: #16a34a;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .remove-btn {
+            background: #dc2626;
+            color: #fff;
+            padding: 8px 10px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #4f46e5;
+            color: #fff;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 15px;
+        }
+
+        /* ---------- COST NOTE ---------- */
+        .cost-box {
+            flex: 1;
+            background: #ffffff;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+        .cost-box h3 {
+            margin-top: 0;
+            color: #1f2937;
+        }
+
+        .cost-box ul {
+            padding-left: 18px;
+            color: #374151;
+        }
+
+        .cost-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .highlight {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 900px) {
+            .main-wrapper {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo">Printing Portal</div>
+        <ul class="nav-links">
+            <li><a href="/requests">Requests</a></li>
+            <li><a href="/">Contact: +91-9508545728</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="main-wrapper">
+
+    <!-- FORM -->
+    <div class="container">
+        <h2>Printing Details Form</h2>
+
+        <form action="/submit" method="POST" enctype="multipart/form-data">
+
+            <label>Name</label>
+            <input type="text" name="name" required>
+
+            <label>Hostel No</label>
+            <input type="text" name="hostelNo" required>
+
+            <label>Room No</label>
+            <input type="text" name="roomNo" required>
+
+            <label>Phone Number</label>
+            <input type="tel" name="phone" pattern="[0-9]{10}" maxlength="10" required>
+
+            <label>Upload Documents</label>
+
+            <div id="document-container">
+                <div class="file-row">
+                    <input type="file" name="documents" accept=".pdf,.png,.jpg,.jpeg" required>
+                    <button type="button" class="view-btn" onclick="viewFile(this)">View</button>
+                </div>
+            </div>
+
+            <button type="button" class="add-btn" onclick="addDocument()">
+                + Add More Document
+            </button>
+
+            <button type="submit" class="submit-btn">
+                Submit Printing Request
+            </button>
+        </form>
+    </div>
+
+    <!-- COST NOTE -->
+    <div class="cost-box">
+        <h3>🖨 Printing Cost Details</h3>
+        <ul>
+            <li>Black & White (One-side): <span class="highlight">₹2 per page</span></li>
+            <li>Black & White (Both-side): <span class="highlight">₹3 per page</span></li>
+            <li>Color Print (One-side): <span class="highlight">₹5 per page</span></li>
+            <li>Color Print (Both-side): <span class="highlight">₹8 per page</span></li>
+            <li>Double side printing available</li>
+            <li>Accepted formats: PDF, JPG, PNG</li>
+            <li>Payment at printing counter</li>
+        </ul>
+
+        <p style="font-size:13px; color:#6b7280;">
+            📌 Final cost depends on number of pages and print type.
+        </p>
+    </div>
+
+</div>
+
+<script>
+function viewFile(btn) {
+    const input = btn.previousElementSibling;
+    if (!input.files.length) {
+        alert("Select a file first");
+        return;
+    }
+    const url = URL.createObjectURL(input.files[0]);
+    window.open(url, "_blank");
+}
+
+function addDocument() {
+    const container = document.getElementById("document-container");
+
+    const div = document.createElement("div");
+    div.className = "file-row";
+
+    div.innerHTML = `
+        <input type="file" name="documents" accept=".pdf,.png,.jpg,.jpeg" required>
+        <button type="button" class="view-btn" onclick="viewFile(this)">View</button>
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
+    `;
+
+    container.appendChild(div);
+}
+</script>
+
+</body>
+</html>

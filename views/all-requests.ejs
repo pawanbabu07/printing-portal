@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Printing Requests</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            margin: 0;
+        }
+
+        h2 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* ---------- SEARCH BAR ---------- */
+        .search-box {
+            width: 800px;
+            margin: 0 auto 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #cbd5f5;
+            font-size: 14px;
+        }
+
+        /* ---------- CARD ---------- */
+        .card {
+            background: #fff;
+            width: 800px;
+            margin: 15px auto;
+            padding: 16px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        p { margin: 6px 0; }
+
+        .request-id {
+            background: #eef2ff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        /* ---------- STATUS ---------- */
+        .status {
+            font-weight: bold;
+        }
+        .status.pending { color: orange; }
+        .status.printed { color: green; }
+
+        /* ---------- DOCUMENT LIST ---------- */
+        .doc-list {
+            margin-top: 12px;
+        }
+
+        .doc-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+        }
+
+        .doc-item.printed {
+            background: #dcfce7;
+            border: 1px solid #16a34a;
+        }
+
+        .doc-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #16a34a;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .view-btn { background: #2563eb; }
+        .print-btn { background: #4b5563; }
+        .delete-btn { background: #dc2626; }
+
+        .doc-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>All Printing Requests</h2>
+
+<!-- 🔍 SEARCH -->
+<div class="search-box">
+    <input 
+        type="text" 
+        id="searchInput"
+        placeholder="Search by Request ID, Name, Hostel No, Room No, Mobile Number..."
+        onkeyup="searchRequests()">
+</div>
+
+<% requests.forEach(item => { %>
+<div 
+    class="card request-card"
+    data-search="<%= item._id %> <%= item.name %> <%= item.hostelNo %> <%= item.roomNo %> <%= item.phone %>"
+>
+
+    <p><b>Request ID:</b> <span class="request-id"><%= item._id %></span></p>
+    <p><b>Name:</b> <%= item.name %></p>
+    <p><b>Phone:</b> <%= item.phone %></p>
+    <p><b>Hostel:</b> <%= item.hostelNo %> | <b>Room:</b> <%= item.roomNo %></p>
+
+    <p class="status pending" id="status-<%= item._id %>">
+        Status: Pending
+    </p>
+
+    <!-- DOCUMENTS -->
+    <div class="doc-list">
+        <b>Documents:</b>
+
+        <% item.documents.forEach((doc, index) => { %>
+            <div class="doc-item" id="doc-<%= item._id %>-<%= index %>">
+
+                <div class="doc-left">
+                    <input 
+                        type="checkbox" 
+                        id="check-<%= item._id %>-<%= index %>" 
+                        disabled>
+
+                    <span>
+                        <%= index + 1 %>. <%= doc.originalname || doc.filename %>
+                    </span>
+                </div>
+
+                <div class="doc-actions">
+                    <!-- DOWNLOAD -->
+                    <a 
+                        href="/download/<%= item._id %>/<%= doc.filename %>" 
+                        class="btn view-btn">
+                        Download
+                    </a>
+
+                    <!-- PRINT -->
+                    <button 
+                        type="button"
+                        class="btn print-btn"
+                        onclick="markPrinted('<%= item._id %>', <%= index %>, <%= item.documents.length %>)">
+                        Print
+                    </button>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+        <form 
+            action="/delete-request/<%= item._id %>" 
+            method="POST"
+            onsubmit="return confirm('Delete this request?')">
+            <button class="btn delete-btn">Delete</button>
+        </form>
+    </div>
+
+</div>
+<% }) %>
+
+<script>
+function searchRequests() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const cards = document.getElementsByClassName("request-card");
+
+    for (let card of cards) {
+        const text = card.getAttribute("data-search").toLowerCase();
+        card.style.display = text.includes(input) ? "block" : "none";
+    }
+}
+
+function markPrinted(recordId, index, totalDocs) {
+    const checkbox = document.getElementById(`check-${recordId}-${index}`);
+    const row = document.getElementById(`doc-${recordId}-${index}`);
+
+    checkbox.checked = true;
+    row.classList.add("printed");
+
+    let allChecked = true;
+    for (let i = 0; i < totalDocs; i++) {
+        if (!document.getElementById(`check-${recordId}-${i}`).checked) {
+            allChecked = false;
+            break;
+        }
+    }
+
+    const statusEl = document.getElementById(`status-${recordId}`);
+    statusEl.textContent = allChecked ? "Status: Printed" : "Status: Pending";
+    statusEl.className = "status " + (allChecked ? "printed" : "pending");
+}
+</script>
+
+</body>
+</html>
