@@ -131,7 +131,7 @@
             background: #16a34a;
             color: #fff;
             padding: 10px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .remove-btn {
@@ -155,7 +155,7 @@
             background: #ffffff;
             padding: 22px;
             border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
         }
 
         .cost-box h3 {
@@ -178,9 +178,20 @@
             font-weight: 600;
         }
 
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn-row button {
+            flex: 1;
+        }
+
+
         /* ---------- RESPONSIVE ---------- */
-        @media (max-width: 900px) {
-            .main-wrapper {
+        @media (max-width: 500px) {
+            .btn-row {
                 flex-direction: column;
             }
         }
@@ -189,103 +200,107 @@
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo">Printing Portal</div>
-        <ul class="nav-links">
-            <li><a href="/requests">Requests</a></li>
-            <li><a href="/">Contact: +91-9508545728</a></li>
-        </ul>
-    </div>
-</nav>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">Printing Portal</div>
+            <ul class="nav-links">
+                <li><a href="/requests">Requests</a></li>
+                <li><a href="/">Contact: +91-9508545728</a></li>
+            </ul>
+        </div>
+    </nav>
 
-<!-- MAIN CONTENT -->
-<div class="main-wrapper">
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper">
 
-    <!-- FORM -->
-    <div class="container">
-        <h2>Printing Details Form</h2>
+        <!-- FORM -->
+        <div class="container">
+            <h2>Printing Details Form</h2>
 
-        <form action="/submit" method="POST" enctype="multipart/form-data">
+            <form action="/submit" method="POST" enctype="multipart/form-data">
 
-            <label>Name</label>
-            <input type="text" name="name" required>
+                <label>Name</label>
+                <input type="text" name="name" required>
 
-            <label>Hostel No</label>
-            <input type="text" name="hostelNo" required>
+                <label>Hostel No</label>
+                <input type="text" name="hostelNo" required>
 
-            <label>Room No</label>
-            <input type="text" name="roomNo" required>
+                <label>Room No</label>
+                <input type="text" name="roomNo" required>
 
-            <label>Phone Number</label>
-            <input type="tel" name="phone" pattern="[0-9]{10}" maxlength="10" required>
+                <label>Phone Number</label>
+                <input type="tel" name="phone" pattern="[0-9]{10}" maxlength="10" required>
 
-            <label>Upload Documents</label>
+                <label>Upload Documents</label>
 
-            <div id="document-container">
-                <div class="file-row">
-                    <input type="file" name="documents" accept=".pdf,.png,.jpg,.jpeg" required>
-                    <button type="button" class="view-btn" onclick="viewFile(this)">View</button>
+                <div id="document-container">
+                    <div class="file-row">
+                        <input type="file" name="documents" accept=".pdf,.png,.jpg,.jpeg" required>
+                        <button type="button" class="view-btn" onclick="viewFile(this)">View</button>
+                    </div>
                 </div>
-            </div>
 
-            <button type="button" class="add-btn" onclick="addDocument()">
-                + Add More Document
-            </button>
+                <div class="btn-row">
+                    <button type="button" class="add-btn" onclick="addDocument()">
+                        + Add More
+                    </button>
 
-            <button type="submit" class="submit-btn">
-                Submit Printing Request
-            </button>
-        </form>
+                    <button type="submit" class="submit-btn">
+                        Submit
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- COST NOTE -->
+        <div class="cost-box">
+            <h3>🖨 Printing Cost Details</h3>
+            <ul>
+                <li>Black & White (One-side): <span class="highlight">₹2 per page</span></li>
+                <li>Black & White (Both-side): <span class="highlight">₹3 per page</span></li>
+                <li>Color Print (One-side): <span class="highlight">₹5 per page</span></li>
+                <li>Color Print (Both-side): <span class="highlight">₹8 per page</span></li>
+                <li>Double side printing available</li>
+                <li>Accepted formats: PDF, JPG, PNG</li>
+                <li>Payment at printing counter</li>
+            </ul>
+
+            <p style="font-size:13px; color:#6b7280;">
+                📌 Final cost depends on number of pages and print type.
+            </p>
+        </div>
+
     </div>
 
-    <!-- COST NOTE -->
-    <div class="cost-box">
-        <h3>🖨 Printing Cost Details</h3>
-        <ul>
-            <li>Black & White (One-side): <span class="highlight">₹2 per page</span></li>
-            <li>Black & White (Both-side): <span class="highlight">₹3 per page</span></li>
-            <li>Color Print (One-side): <span class="highlight">₹5 per page</span></li>
-            <li>Color Print (Both-side): <span class="highlight">₹8 per page</span></li>
-            <li>Double side printing available</li>
-            <li>Accepted formats: PDF, JPG, PNG</li>
-            <li>Payment at printing counter</li>
-        </ul>
+    <script>
+        function viewFile(btn) {
+            const input = btn.previousElementSibling;
+            if (!input.files.length) {
+                alert("Select a file first");
+                return;
+            }
+            const url = URL.createObjectURL(input.files[0]);
+            window.open(url, "_blank");
+        }
 
-        <p style="font-size:13px; color:#6b7280;">
-            📌 Final cost depends on number of pages and print type.
-        </p>
-    </div>
+        function addDocument() {
+            const container = document.getElementById("document-container");
 
-</div>
+            const div = document.createElement("div");
+            div.className = "file-row";
 
-<script>
-function viewFile(btn) {
-    const input = btn.previousElementSibling;
-    if (!input.files.length) {
-        alert("Select a file first");
-        return;
-    }
-    const url = URL.createObjectURL(input.files[0]);
-    window.open(url, "_blank");
-}
-
-function addDocument() {
-    const container = document.getElementById("document-container");
-
-    const div = document.createElement("div");
-    div.className = "file-row";
-
-    div.innerHTML = `
+            div.innerHTML = `
         <input type="file" name="documents" accept=".pdf,.png,.jpg,.jpeg" required>
         <button type="button" class="view-btn" onclick="viewFile(this)">View</button>
         <button type="button" class="remove-btn" onclick="this.parentElement.remove()">✕</button>
     `;
 
-    container.appendChild(div);
-}
-</script>
+            container.appendChild(div);
+        }
+    </script>
 
 </body>
+
 </html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hostel Record</title>
+    <title>Printing Review</title>
 
     <style>
         body {
@@ -15,21 +15,29 @@
         }
         .card {
             background: #fff;
-            width: 600px;
+            width: 650px;
             margin: 20px auto;
-            padding: 15px;
+            padding: 16px;
             border-radius: 6px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         p { margin: 6px 0; }
+
         .doc-item {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             background: #f9fafb;
-            padding: 6px;
-            margin: 5px 0;
+            padding: 8px;
+            margin: 6px 0;
             border-radius: 4px;
         }
+
+        .doc-actions {
+            display: flex;
+            gap: 6px;
+        }
+
         .btn {
             padding: 6px 12px;
             border-radius: 4px;
@@ -39,12 +47,24 @@
             font-size: 13px;
             text-decoration: none;
         }
+
         .view-btn { background: #4f46e5; }
-        .confirm-btn { background: #16a34a; }
+        .edit-btn { background: #16a34a; }
+        .delete-btn { background: #dc2626; }
+
+        .confirm-btn {
+            background: #0f766e;
+            margin-top: 10px;
+        }
+
         .confirmed {
             color: green;
             font-weight: bold;
             margin-top: 10px;
+        }
+
+        input[type="file"] {
+            display: none;
         }
     </style>
 </head>
@@ -55,7 +75,7 @@
 <% data.forEach(item => { %>
 <div class="card">
 
-    <!-- ❌ Reference NOT shown before confirm -->
+    <!-- Reference shown ONLY after confirm -->
     <% if (item.isConfirmed) { %>
         <p><b>Reference No:</b> <%= item._id %></p>
     <% } %>
@@ -65,25 +85,70 @@
     <p><b>Hostel No:</b> <%= item.hostelNo %></p>
     <p><b>Room No:</b> <%= item.roomNo %></p>
 
+    <hr>
+
     <b>Documents:</b>
+
     <% item.documents.forEach((doc, index) => { %>
         <div class="doc-item">
-            <span><%= index + 1 %>. <%= doc.originalname %></span>
-            <a href="/uploads/<%= doc.filename %>" target="_blank" class="btn view-btn">
-                View
-            </a>
+
+            <span>
+                <%= index + 1 %>. <%= doc.originalname %>
+            </span>
+
+            <div class="doc-actions">
+
+                <!-- VIEW / DOWNLOAD -->
+                <a href="<%= doc.url %>" target="_blank" class="btn view-btn">
+                    View
+                </a>
+
+                <!-- EDIT / REPLACE -->
+                <form
+                    action="/edit-document/<%= item._id %>/<%= index %>"
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+                    <input
+                        type="file"
+                        name="document"
+                        accept=".pdf,.jpg,.png,.jpeg"
+                        required
+                        onchange="this.form.submit()"
+                        id="edit-<%= item._id %>-<%= index %>"
+                    >
+                    <label
+                        for="edit-<%= item._id %>-<%= index %>"
+                        class="btn edit-btn"
+                    >
+                        Edit
+                    </label>
+                </form>
+
+                <!-- DELETE -->
+                <form
+                    action="/delete-document/<%= item._id %>/<%= index %>"
+                    method="POST"
+                    onsubmit="return confirm('Delete this document?')"
+                >
+                    <button type="submit" class="btn delete-btn">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
         </div>
     <% }) %>
 
-    <br>
+    <hr>
 
-    <!-- ✅ CONFIRM LOGIC -->
+    <!-- CONFIRM RECORD -->
     <% if (!item.isConfirmed) { %>
         <form
             action="/confirm-record/<%= item._id %>"
             method="POST"
-            onsubmit="return confirm('Are you sure you want to confirm?')">
-
+            onsubmit="return confirm('Confirm this request and generate reference number?')"
+        >
             <button type="submit" class="btn confirm-btn">
                 Confirm & Generate Reference
             </button>
